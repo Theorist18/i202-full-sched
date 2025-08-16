@@ -1,114 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0" />
-  <title>I202 Class Schedule</title>
-  <style>
-    body {
-      margin: 0; 
-      font-family: Arial, sans-serif; 
-      background: #000; 
-      color: #fff;
-      text-align: center;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>I202 Class Schedule — Smart View</title>
+<style>
+  :root {
+    --gold:#FFD700;
+    --bg:#000;
+    --panel:#111;
+    --panel2:#222;
+    --text:#fff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: Arial, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", sans-serif;
+    text-align:center;
+  }
+  header {
+    background:var(--gold); color:#000; font-weight:700; font-size:20px;
+    padding:14px; box-shadow:0 2px 10px rgba(255,215,0,.5);
+  }
+  .controls { margin: 12px auto; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  button {
+    background:var(--gold); color:#000; border:0; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;
+  }
+  button:hover { filter:brightness(1.05); transform: translateY(-1px); }
 
-    header {
-      background: #FFD700;
-      color: #000;
-      padding: 15px;
-      font-size: 20px;
-      font-weight: bold;
-      box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
-    }
+  /* Countdown + Today list panels */
+  #countdown, #todayBox {
+    margin: 12px auto; max-width: 720px; text-align:left;
+    background: var(--panel); border:2px solid var(--gold); border-radius:12px;
+    box-shadow:0 0 15px rgba(255,215,0,.4); padding:12px 14px;
+  }
+  #countdown { font-size:18px; font-weight:700; }
 
-    .controls {
-      margin: 15px 0;
-    }
+  .today-item {
+    border:1px solid var(--gold); border-radius:10px; padding:10px; margin:10px 0; background:var(--panel2);
+  }
+  .today-item .when { color: var(--gold); font-weight:700; }
+  .today-item .subj { font-weight:700; }
+  .today-item.highlight {
+    background:#fff7bf; color:#000; box-shadow:0 0 18px var(--gold); border-color:#000;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow:0 0 8px var(--gold); } 50% { box-shadow:0 0 28px var(--gold); } 100% { box-shadow:0 0 8px var(--gold); }
+  }
 
-    button {
-      background: #FFD700;
-      border: none;
-      color: #000;
-      padding: 8px 14px;
-      margin: 0 5px;
-      font-size: 14px;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #fff;
-      color: #000;
-      transform: scale(1.05);
-    }
-
-    .schedule-wrapper {
-      display: flex;
-      justify-content: center;
-      margin: 10px;
-      overflow-x: auto; /* allow scroll/zoom on mobile */
-    }
-
-    .schedule {
-      display: grid; 
-      grid-template-columns: 80px repeat(6, 1fr); 
-      border: 2px solid #FFD700; 
-      font-size: 13px;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-      transform: scale(1);
-      transform-origin: top center;
-      transition: transform 0.3s ease;
-    }
-
-    .cell {
-      border: 1px solid #FFD700; 
-      padding: 6px; 
-      text-align: center; 
-      min-height: 40px;
-      background: #111; 
-      color: #fff;
-    }
-
-    .header {
-      font-weight: bold; 
-      background: #FFD700; 
-      color: #000;
-    }
-
-    .time {
-      font-weight: bold; 
-      background: #222; 
-      color: #FFD700;
-    }
-
-    .event {
-      font-weight: bold; 
-      background: #333; 
-      color: #fff; 
-      border-left: 4px solid #FFD700;
-    }
-
-    .event:hover {
-      background: #FFD700; 
-      color: #000; 
-      transition: 0.3s;
-    }
-  </style>
+  /* Weekly grid (kept compact, same gold/black look) */
+  .schedule-wrapper { display:flex; justify-content:center; margin: 8px; overflow-x:auto; }
+  .schedule {
+    display:grid; grid-template-columns: 84px repeat(6, 1fr);
+    border:2px solid var(--gold); box-shadow:0 0 15px rgba(255,215,0,.6);
+    transform-origin: top center; transition: transform .25s ease;
+    min-width: 760px;
+  }
+  .cell {
+    border:1px solid var(--gold); padding:6px; min-height:42px; display:flex; align-items:center; justify-content:center;
+    background:#111;
+  }
+  .cell.header { background:var(--gold); color:#000; font-weight:700; }
+  .cell.time   { background:#1b1b1b; color:var(--gold); font-weight:700; }
+  .event { background:#333; color:#fff; border-left:4px solid var(--gold); font-weight:700; line-height:1.2; padding:8px; }
+  .event:hover { background:var(--gold); color:#000; }
+  .event.highlight {
+    background:#fff7bf !important; color:#000 !important; box-shadow:0 0 16px var(--gold);
+    animation: pulse 1.5s infinite;
+  }
+</style>
 </head>
 <body>
-  <header>I202 Class Schedule</header>
+  <header>I202 Class Schedule — Live View</header>
 
   <div class="controls">
     <button onclick="history.back()">⬅ Return</button>
-    <button onclick="zoomIn()">🔍 Zoom In</button>
-    <button onclick="zoomOut()">🔎 Zoom Out</button>
+    <button onclick="zoom(0.1)">🔍 Zoom In</button>
+    <button onclick="zoom(-0.1)">🔎 Zoom Out</button>
   </div>
 
+  <div id="countdown">Loading next class…</div>
+  <div id="todayBox">
+    <strong>Today’s Classes</strong>
+    <div id="todayList" style="margin-top:8px;"></div>
+  </div>
+
+  <!-- Weekly grid (corrected from your PDF) -->
   <div class="schedule-wrapper">
     <div class="schedule" id="schedule">
+      <!-- headers -->
       <div class="cell header">Time</div>
       <div class="cell header">Mon</div>
       <div class="cell header">Tue</div>
@@ -117,83 +98,373 @@
       <div class="cell header">Fri</div>
       <div class="cell header">Sat</div>
 
-      <div class="cell time">7:00-8:00</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-      <div class="cell time">8:00-9:00</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-      <div class="cell time">9:00-10:00</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <!-- 7:00-8:00 -->
+      <div class="cell time">7:00–8:00</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-      <div class="cell time">10:00-11:00</div>
-      <div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>L307</div>
-      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2</div><div class="cell"></div>
+      <!-- 8:00-9:00 -->
+      <div class="cell time">8:00–9:00</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-      <div class="cell time">11:00-12:00</div>
-      <div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>L307</div>
-      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2</div><div class="cell"></div>
+      <!-- 9:00-10:00 -->
+      <div class="cell time">9:00–10:00</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-      <div class="cell time">12:00-1:00</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-
-      <div class="cell time">1:00-2:00</div>
-      <div class="cell"></div><div class="cell"></div><div class="cell event">PATHFIT3<br>Guevarra, Jhunboy<br>GYM</div><div class="cell"></div><div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2</div><div class="cell"></div>
-
-      <div class="cell time">2:00-3:00</div>
-      <div class="cell event">CONTWORLD<br>Villacorte, Jonie<br>L309</div>
-      <div class="cell"></div><div class="cell event">PATHFIT3<br>Guevarra, Jhunboy<br>GYM</div><div class="cell"></div><div class="cell event">7AFSYS<br>AFSYS Prof<br>L310</div><div class="cell"></div>
-
-      <div class="cell time">3:00-4:00</div>
-      <div class="cell event">CONTWORLD<br>Villacorte, Jonie<br>L309</div>
-      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell event">7AFSYS<br>AFSYS Prof<br>L310</div><div class="cell"></div>
-
-      <div class="cell time">4:00-5:00</div>
-      <div class="cell event">CONTWORLD<br>Villacorte, Jonie<br>L309</div>
-      <div class="cell"></div><div class="cell"></div><div class="cell event">6DATAS<br>Galang, Deborah<br>L302</div><div class="cell event">CCARES<br>L309</div><div class="cell event">7AFSYS<br>AFSYS Prof<br>L310</div>
-
-      <div class="cell time">5:00-6:00</div>
-      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>Asynchronous</div>
-      <div class="cell event">7BUSPRO<br>Umali, Barbara<br>L304</div>
-      <div class="cell"></div>
-      <div class="cell event">6DATAS<br>Galang, Deborah<br>L302</div>
-      <div class="cell"></div>
+      <!-- 10:00-11:00 -->
+      <div class="cell time">10:00–11:00</div>
+      <div class="cell event"
+           data-day="Mon" data-start="10:00" data-end="11:00"
+           data-subject="7WEB1" data-prof="Austria, Marc Ed Joseph" data-room="L307">
+        7WEB1<br>Austria, Marc Ed Joseph<br>L307
+      </div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell event"
+           data-day="Fri" data-start="10:00" data-end="11:00"
+           data-subject="7WEB1" data-prof="Austria, Marc Ed Joseph" data-room="CLAB2">
+        7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2
+      </div>
       <div class="cell"></div>
 
-      <div class="cell time">6:00-7:00</div>
-      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>Asynchronous</div>
-      <div class="cell event">7BUSPRO<br>Umali, Barbara<br>L304</div>
-      <div class="cell event">7QUANTI<br>Pineda, Jayson Lester<br>L306</div>
-      <div class="cell event">6DATAS<br>Galang, Deborah<br>CLAB7</div>
+      <!-- 11:00-12:00 -->
+      <div class="cell time">11:00–12:00</div>
+      <div class="cell event"
+           data-day="Mon" data-start="11:00" data-end="12:00"
+           data-subject="7WEB1" data-prof="Austria, Marc Ed Joseph" data-room="L307">
+        7WEB1<br>Austria, Marc Ed Joseph<br>L307
+      </div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell event"
+           data-day="Fri" data-start="11:00" data-end="12:00"
+           data-subject="7WEB1" data-prof="Austria, Marc Ed Joseph" data-room="CLAB2">
+        7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2
+      </div>
       <div class="cell"></div>
-      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>CLAB2</div>
 
-      <div class="cell time">7:00-8:00</div>
-      <div class="cell"></div>
-      <div class="cell event">7BUSPRO<br>Umali, Barbara<br>L304</div>
-      <div class="cell event">7QUANTI<br>Pineda, Jayson Lester<br>L306</div>
-      <div class="cell event">6DATAS<br>Galang, Deborah<br>CLAB7</div>
-      <div class="cell"></div>
-      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>CLAB2</div>
+      <!-- 12:00-1:00 -->
+      <div class="cell time">12:00–1:00</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-      <div class="cell time">8:00-9:00</div>
+      <!-- 1:00-2:00 -->
+      <div class="cell time">1:00–2:00</div>
+      <div class="cell"></div><div class="cell"></div>
+      <div class="cell event"
+           data-day="Wed" data-start="13:00" data-end="14:00"
+           data-subject="PATHFIT3" data-prof="Guevarra, Jhunboy" data-room="GYM">
+        PATHFIT3<br>Guevarra, Jhunboy<br>GYM
+      </div>
       <div class="cell"></div>
+      <div class="cell event"
+           data-day="Fri" data-start="13:00" data-end="14:00"
+           data-subject="7WEB1" data-prof="Austria, Marc Ed Joseph" data-room="CLAB2">
+        7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2
+      </div>
       <div class="cell"></div>
-      <div class="cell event">7QUANTI<br>Pineda, Jayson Lester<br>L306</div>
-      <div class="cell event">6DATAS<br>Galang, Deborah<br>CLAB7</div>
+
+      <!-- 2:00-3:00 -->
+      <div class="cell time">2:00–3:00</div>
+      <div class="cell event"
+           data-day="Mon" data-start="14:00" data-end="15:00"
+           data-subject="CONTWORLD" data-prof="Villacorte, Jonie" data-room="L309">
+        CONTWORLD<br>Villacorte, Jonie<br>L309
+      </div>
       <div class="cell"></div>
-      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>CLAB2</div>
+      <div class="cell event"
+           data-day="Wed" data-start="14:00" data-end="15:00"
+           data-subject="PATHFIT3" data-prof="Guevarra, Jhunboy" data-room="GYM">
+        PATHFIT3<br>Guevarra, Jhunboy<br>GYM
+      </div>
+      <div class="cell"></div>
+      <div class="cell event"
+           data-day="Fri" data-start="14:00" data-end="15:00"
+           data-subject="7WEB1" data-prof="Austria, Marc Ed Joseph" data-room="CLAB2">
+        7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2
+      </div>
+      <div class="cell event"
+           data-day="Sat" data-start="14:00" data-end="15:00"
+           data-subject="7AFSYS" data-prof="AFSYS Prof" data-room="L310">
+        7AFSYS<br>AFSYS Prof<br>L310
+      </div>
+
+      <!-- 3:00-4:00 -->
+      <div class="cell time">3:00–4:00</div>
+      <div class="cell event"
+           data-day="Mon" data-start="15:00" data-end="16:00"
+           data-subject="CONTWORLD" data-prof="Villacorte, Jonie" data-room="L309">
+        CONTWORLD<br>Villacorte, Jonie<br>L309
+      </div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell event"
+           data-day="Fri" data-start="15:00" data-end="16:00"
+           data-subject="7WEB1" data-prof="Austria, Marc Ed Joseph" data-room="CLAB2">
+        7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2
+      </div>
+      <div class="cell event"
+           data-day="Sat" data-start="15:00" data-end="16:00"
+           data-subject="7AFSYS" data-prof="AFSYS Prof" data-room="L310">
+        7AFSYS<br>AFSYS Prof<br>L310
+      </div>
+
+      <!-- 4:00-5:00 -->
+      <div class="cell time">4:00–5:00</div>
+      <div class="cell event"
+           data-day="Mon" data-start="16:00" data-end="17:00"
+           data-subject="CONTWORLD" data-prof="Villacorte, Jonie" data-room="L309">
+        CONTWORLD<br>Villacorte, Jonie<br>L309
+      </div>
+      <div class="cell"></div><div class="cell"></div>
+      <div class="cell event"
+           data-day="Thu" data-start="16:00" data-end="17:00"
+           data-subject="6DATAS" data-prof="Galang, Deborah" data-room="L302">
+        6DATAS<br>Galang, Deborah<br>L302
+      </div>
+      <div class="cell event"
+           data-day="Fri" data-start="16:00" data-end="17:00"
+           data-subject="CCARES" data-prof="" data-room="L309">
+        CCARES<br>L309
+      </div>
+      <div class="cell event"
+           data-day="Sat" data-start="16:00" data-end="17:00"
+           data-subject="7AFSYS" data-prof="AFSYS Prof" data-room="L310">
+        7AFSYS<br>AFSYS Prof<br>L310
+      </div>
+
+      <!-- 5:00-6:00 -->
+      <div class="cell time">5:00–6:00</div>
+      <div class="cell event"
+           data-day="Mon" data-start="17:00" data-end="18:00"
+           data-subject="7HCOMINT" data-prof="Milarpis, Carla" data-room="Asynchronous">
+        7HCOMINT<br>Milarpis, Carla<br>Asynchronous
+      </div>
+      <div class="cell event"
+           data-day="Tue" data-start="17:00" data-end="18:00"
+           data-subject="7BUSPRO" data-prof="Umali, Barbara" data-room="L304">
+        7BUSPRO<br>Umali, Barbara<br>L304
+      </div>
+      <div class="cell"></div>
+      <div class="cell event"
+           data-day="Thu" data-start="17:00" data-end="18:00"
+           data-subject="6DATAS" data-prof="Galang, Deborah" data-room="L302">
+        6DATAS<br>Galang, Deborah<br>L302
+      </div>
+      <div class="cell"></div><div class="cell"></div>
+
+            <!-- 6:00-7:00 -->
+      <div class="cell time">6:00–7:00</div>
+      <div class="cell event"
+           data-day="Mon" data-start="18:00" data-end="19:00"
+           data-subject="7HCOMINT" data-prof="Milarpis, Carla" data-room="Asynchronous">
+        7HCOMINT<br>Milarpis, Carla<br>Asynchronous
+      </div>
+      <div class="cell event"
+           data-day="Tue" data-start="18:00" data-end="19:00"
+           data-subject="7BUSPRO" data-prof="Umali, Barbara" data-room="L304">
+        7BUSPRO<br>Umali, Barbara<br>L304
+      </div>
+      <div class="cell event"
+           data-day="Wed" data-start="18:00" data-end="19:00"
+           data-subject="7QUANTI" data-prof="Pineda, Jayson Lester" data-room="L306">
+        7QUANTI<br>Pineda, Jayson Lester<br>L306
+      </div>
+      <div class="cell event"
+           data-day="Thu" data-start="18:00" data-end="19:00"
+           data-subject="6DATAS" data-prof="Galang, Deborah" data-room="CLAB7">
+        6DATAS<br>Galang, Deborah<br>CLAB7
+      </div>
+      <div class="cell event"
+           data-day="Fri" data-start="18:00" data-end="19:00"
+           data-subject="7HCOMINT" data-prof="Milarpis, Carla" data-room="CLAB2">
+        7HCOMINT<br>Milarpis, Carla<br>CLAB2
+      </div>
+      <div class="cell"></div>
+
+      <!-- 7:00-8:00 -->
+      <div class="cell time">7:00–8:00</div>
+      <div class="cell"></div>
+      <div class="cell event"
+           data-day="Tue" data-start="19:00" data-end="20:00"
+           data-subject="7BUSPRO" data-prof="Umali, Barbara" data-room="L304">
+        7BUSPRO<br>Umali, Barbara<br>L304
+      </div>
+      <div class="cell event"
+           data-day="Wed" data-start="19:00" data-end="20:00"
+           data-subject="7QUANTI" data-prof="Pineda, Jayson Lester" data-room="L306">
+        7QUANTI<br>Pineda, Jayson Lester<br>L306
+      </div>
+      <div class="cell event"
+           data-day="Thu" data-start="19:00" data-end="20:00"
+           data-subject="6DATAS" data-prof="Galang, Deborah" data-room="CLAB7">
+        6DATAS<br>Galang, Deborah<br>CLAB7
+      </div>
+      <div class="cell event"
+           data-day="Fri" data-start="19:00" data-end="20:00"
+           data-subject="7HCOMINT" data-prof="Milarpis, Carla" data-room="CLAB2">
+        7HCOMINT<br>Milarpis, Carla<br>CLAB2
+      </div>
+      <div class="cell"></div>
+
+      <!-- 8:00-9:00 -->
+      <div class="cell time">8:00–9:00</div>
+      <div class="cell"></div><div class="cell"></div>
+      <div class="cell event"
+           data-day="Wed" data-start="20:00" data-end="21:00"
+           data-subject="7QUANTI" data-prof="Pineda, Jayson Lester" data-room="L306">
+        7QUANTI<br>Pineda, Jayson Lester<br>L306
+      </div>
+      <div class="cell event"
+           data-day="Thu" data-start="20:00" data-end="21:00"
+           data-subject="6DATAS" data-prof="Galang, Deborah" data-room="CLAB7">
+        6DATAS<br>Galang, Deborah<br>CLAB7
+      </div>
+      <div class="cell event"
+           data-day="Fri" data-start="20:00" data-end="21:00"
+           data-subject="7HCOMINT" data-prof="Milarpis, Carla" data-room="CLAB2">
+        7HCOMINT<br>Milarpis, Carla<br>CLAB2
+      </div>
+      <div class="cell"></div>
+
+      </div>
     </div>
   </div>
 
-  <script>
-    let zoomLevel = 1;
+<script>
+  let zoomLevel = 1;
+  function zoom(delta){ zoomLevel = Math.max(0.5, zoomLevel + delta); document.getElementById('schedule').style.transform = `scale(${zoomLevel})`; }
 
-    function zoomIn() {
-      zoomLevel += 0.1;
-      document.getElementById("schedule").style.transform = `scale(${zoomLevel})`;
-    }
+  // ---- Helpers ----
+  const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const fullNames = {Sun:"Sunday",Mon:"Monday",Tue:"Tuesday",Wed:"Wednesday",Thu:"Thursday",Fri:"Friday",Sat:"Saturday"};
 
-    function zoomOut() {
-      if (zoomLevel > 0.5) {
-        zoomLevel -= 0.1;
-        document.getElementById("schedule").style.transform = `scale(${zoomLevel})`;
+  const toMins = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
+  const fmt12  = t => {
+    let [h,m] = t.split(':').map(Number);
+    const ampm = h>=12 ? 'PM' : 'AM';
+    h = ((h+11)%12)+1;
+    return `${h}:${m.toString().padStart(2,'0')} ${ampm}`;
+  };
+
+  function readEvents() {
+    // Read all .event elements and turn into structured objects
+    const evs = [];
+    document.querySelectorAll('.event').forEach(el=>{
+      const e = {
+        el,
+        day:  el.dataset.day,          // "Mon" etc
+        start: el.dataset.start,       // "HH:MM" 24h
+        end:   el.dataset.end,
+        subj:  el.dataset.subject,
+        prof:  el.dataset.prof || "",
+        room:  el.dataset.room || ""
+      };
+      evs.push(e);
+    });
+    return evs;
+  }
+
+  function eventsForToday(all) {
+    const today = dayNames[new Date().getDay()];
+    return all.filter(e=>e.day===today)
+              .sort((a,b)=>toMins(a.start)-toMins(b.start));
+  }
+
+  function mergeContiguous(list) {
+    // Merge adjacent slots for the same class (same subj/prof/room and touching times)
+    if(!list.length) return [];
+    const out = [];
+    let cur = {...list[0]};
+    for(let i=1;i<list.length;i++){
+      const n = list[i];
+      if(n.subj===cur.subj && n.prof===cur.prof && n.room===cur.room && toMins(n.start)===toMins(cur.end)){
+        cur.end = n.end;            // extend window
+      } else {
+        out.push(cur);
+        cur = {...n};
       }
     }
-  </script>
+    out.push(cur);
+    return out;
+  }
+
+  function renderToday(list){
+    const box = document.getElementById('todayList');
+    box.innerHTML = "";
+    list.forEach(item=>{
+      const div = document.createElement('div');
+      div.className = 'today-item';
+      div.dataset.start=item.start; div.dataset.end=item.end; // for highlight sync
+      div.innerHTML = `
+        <div class="when">${fmt12(item.start)} – ${fmt12(item.end)}</div>
+        <div class="subj">${item.subj}</div>
+        <div>${item.prof || ""}</div>
+        <div>${item.room ? 'Room: '+item.room : ''}</div>
+      `;
+      box.appendChild(div);
+    });
+    if(!list.length){
+      box.innerHTML = `<div class="today-item">No classes today. You can now rest or do other things if you have.</div>`;
+    }
+  }
+
+  function findOngoing(list, nowMins){
+    return list.find(e => nowMins >= toMins(e.start) && nowMins < toMins(e.end));
+  }
+  function findUpcoming(list, nowMins){
+    return list.find(e => toMins(e.start) > nowMins);
+  }
+
+  function highlightSync(todaySlots, ongoing){
+    // clear
+    document.querySelectorAll('.event').forEach(el=>el.classList.remove('highlight'));
+    document.querySelectorAll('.today-item').forEach(el=>el.classList.remove('highlight'));
+    if(!ongoing) return;
+    // highlight grid cell that matches the current slot
+    ongoing.el.classList.add('highlight');
+    // highlight matching card in the today list
+    const card = Array.from(document.querySelectorAll('.today-item'))
+      .find(div => div.dataset.start===ongoing.start && div.dataset.end===ongoing.end);
+    if(card) card.classList.add('highlight');
+  }
+
+  function runClock(){
+    const all = readEvents();
+    const today = eventsForToday(all);
+    const merged = mergeContiguous(today);
+    renderToday(merged);
+
+    function tick(){
+      const now = new Date();
+      const nowMins = now.getHours()*60 + now.getMinutes();
+      const countdown = document.getElementById('countdown');
+
+      const ongoing = findOngoing(today, nowMins); // slot-level for highlight
+      const upcoming = findUpcoming(merged, nowMins);
+
+      if(ongoing){
+        // show time remaining to the end of the current block
+        const end = toMins(ongoing.end);
+        const diffMs = (end - nowMins)*60*1000 - (now.getSeconds()*1000 + now.getMilliseconds());
+        const hrs = Math.max(0, Math.floor(diffMs/3600000));
+        const mins= Math.max(0, Math.floor((diffMs%3600000)/60000));
+        const secs= Math.max(0, Math.floor((diffMs%60000)/1000));
+        countdown.textContent = `Ongoing: ${ongoing.subj} — ends in ${hrs}h ${mins}m ${secs}s (until ${fmt12(ongoing.end)})`;
+      } else if(upcoming){
+        const start = toMins(upcoming.start);
+        const diffMs = (start - nowMins)*60*1000 - (now.getSeconds()*1000 + now.getMilliseconds());
+        const hrs = Math.max(0, Math.floor(diffMs/3600000));
+        const mins= Math.max(0, Math.floor((diffMs%3600000)/60000));
+        const secs= Math.max(0, Math.floor((diffMs%60000)/1000));
+        countdown.textContent = `Next: ${upcoming.subj} at ${fmt12(upcoming.start)} — in ${hrs}h ${mins}m ${secs}s`;
+      } else {
+        countdown.textContent = "You can now rest or do other things if you have.";
+      }
+
+      highlightSync(today, ongoing || null);
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  runClock();
+</script>
 </body>
 </html>
+
