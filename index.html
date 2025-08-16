@@ -28,7 +28,6 @@
   }
   button:hover { filter:brightness(1.05); transform: translateY(-1px); }
 
-  /* Countdown + Today list panels */
   #countdown, #todayBox {
     margin: 12px auto; max-width: 720px; text-align:left;
     background: var(--panel); border:2px solid var(--gold); border-radius:12px;
@@ -46,28 +45,43 @@
     animation: pulse 1.5s infinite;
   }
   @keyframes pulse {
-    0% { box-shadow:0 0 8px var(--gold); } 50% { box-shadow:0 0 28px var(--gold); } 100% { box-shadow:0 0 8px var(--gold); }
+    0% { box-shadow:0 0 8px var(--gold); } 
+    50% { box-shadow:0 0 28px var(--gold); } 
+    100% { box-shadow:0 0 8px var(--gold); }
   }
 
-  /* Weekly grid (kept compact, same gold/black look) */
-  .schedule-wrapper { display:flex; justify-content:center; margin: 8px; overflow-x:auto; }
+  /* Weekly grid */
+  .schedule-wrapper { 
+    display:flex; justify-content:center; margin: 8px; 
+    overflow-x:auto; width:100%; 
+  }
   .schedule {
-    display:grid; grid-template-columns: 84px repeat(6, 1fr);
+    display:grid; grid-template-columns: 84px repeat(6, minmax(100px, 1fr));
     border:2px solid var(--gold); box-shadow:0 0 15px rgba(255,215,0,.6);
     transform-origin: top center; transition: transform .25s ease;
-    min-width: 760px;
+    min-width: 700px; width:100%;
   }
   .cell {
-    border:1px solid var(--gold); padding:6px; min-height:42px; display:flex; align-items:center; justify-content:center;
-    background:#111;
+    border:1px solid var(--gold); padding:6px; min-height:42px; display:flex; 
+    align-items:center; justify-content:center; background:#111; text-align:center;
+    font-size:clamp(10px, 2.5vw, 14px);
   }
   .cell.header { background:var(--gold); color:#000; font-weight:700; }
   .cell.time   { background:#1b1b1b; color:var(--gold); font-weight:700; }
-  .event { background:#333; color:#fff; border-left:4px solid var(--gold); font-weight:700; line-height:1.2; padding:8px; }
+  .event { background:#333; color:#fff; border-left:4px solid var(--gold); font-weight:700; line-height:1.2; padding:6px; width:100%; }
   .event:hover { background:var(--gold); color:#000; }
   .event.highlight {
     background:#fff7bf !important; color:#000 !important; box-shadow:0 0 16px var(--gold);
     animation: pulse 1.5s infinite;
+  }
+
+  /* Make layout adapt better on small screens */
+  @media (max-width: 768px) {
+    header { font-size:16px; padding:10px; }
+    #countdown { font-size:16px; }
+    .controls { flex-direction:column; }
+    button { width:100%; max-width:300px; }
+    .schedule { font-size:12px; }
   }
 </style>
 </head>
@@ -75,7 +89,7 @@
   <header>I202 Class Schedule — Live View</header>
 
   <div class="controls">
-    <button onclick="history.back()">⬅ Return</button>
+    <button onclick="goBack()">⬅ Return</button>
     <button onclick="zoom(0.1)">🔍 Zoom In</button>
     <button onclick="zoom(-0.1)">🔎 Zoom Out</button>
   </div>
@@ -86,7 +100,7 @@
     <div id="todayList" style="margin-top:8px;"></div>
   </div>
 
-  <!-- Weekly grid (corrected from your PDF) -->
+ <!-- Weekly grid (corrected from your PDF) -->
   <div class="schedule-wrapper">
     <div class="schedule" id="schedule">
       <!-- headers -->
@@ -324,16 +338,25 @@
 
       </div>
     </div>
-  </div>
 
 <script>
   let zoomLevel = 1;
-  function zoom(delta){ zoomLevel = Math.max(0.5, zoomLevel + delta); document.getElementById('schedule').style.transform = `scale(${zoomLevel})`; }
+  function zoom(delta){ 
+    zoomLevel = Math.max(0.5, zoomLevel + delta); 
+    document.getElementById('schedule').style.transform = `scale(${zoomLevel})`; 
+  }
+
+  // ✅ Fixed return button
+  function goBack(){
+    if (document.referrer !== "" && window.history.length > 1) {
+      history.back();
+    } else {
+      window.location.href = "/"; // fallback to homepage
+    }
+  }
 
   // ---- Helpers ----
   const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  const fullNames = {Sun:"Sunday",Mon:"Monday",Tue:"Tuesday",Wed:"Wednesday",Thu:"Thursday",Fri:"Friday",Sat:"Saturday"};
-
   const toMins = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
   const fmt12  = t => {
     let [h,m] = t.split(':').map(Number);
@@ -343,19 +366,17 @@
   };
 
   function readEvents() {
-    // Read all .event elements and turn into structured objects
     const evs = [];
     document.querySelectorAll('.event').forEach(el=>{
-      const e = {
+      evs.push({
         el,
-        day:  el.dataset.day,          // "Mon" etc
-        start: el.dataset.start,       // "HH:MM" 24h
-        end:   el.dataset.end,
-        subj:  el.dataset.subject,
-        prof:  el.dataset.prof || "",
-        room:  el.dataset.room || ""
-      };
-      evs.push(e);
+        day: el.dataset.day,
+        start: el.dataset.start,
+        end: el.dataset.end,
+        subj: el.dataset.subject,
+        prof: el.dataset.prof || "",
+        room: el.dataset.room || ""
+      });
     });
     return evs;
   }
@@ -367,14 +388,13 @@
   }
 
   function mergeContiguous(list) {
-    // Merge adjacent slots for the same class (same subj/prof/room and touching times)
     if(!list.length) return [];
     const out = [];
     let cur = {...list[0]};
     for(let i=1;i<list.length;i++){
       const n = list[i];
       if(n.subj===cur.subj && n.prof===cur.prof && n.room===cur.room && toMins(n.start)===toMins(cur.end)){
-        cur.end = n.end;            // extend window
+        cur.end = n.end;
       } else {
         out.push(cur);
         cur = {...n};
@@ -390,7 +410,7 @@
     list.forEach(item=>{
       const div = document.createElement('div');
       div.className = 'today-item';
-      div.dataset.start=item.start; div.dataset.end=item.end; // for highlight sync
+      div.dataset.start=item.start; div.dataset.end=item.end;
       div.innerHTML = `
         <div class="when">${fmt12(item.start)} – ${fmt12(item.end)}</div>
         <div class="subj">${item.subj}</div>
@@ -412,13 +432,10 @@
   }
 
   function highlightSync(todaySlots, ongoing){
-    // clear
     document.querySelectorAll('.event').forEach(el=>el.classList.remove('highlight'));
     document.querySelectorAll('.today-item').forEach(el=>el.classList.remove('highlight'));
     if(!ongoing) return;
-    // highlight grid cell that matches the current slot
     ongoing.el.classList.add('highlight');
-    // highlight matching card in the today list
     const card = Array.from(document.querySelectorAll('.today-item'))
       .find(div => div.dataset.start===ongoing.start && div.dataset.end===ongoing.end);
     if(card) card.classList.add('highlight');
@@ -435,11 +452,10 @@
       const nowMins = now.getHours()*60 + now.getMinutes();
       const countdown = document.getElementById('countdown');
 
-      const ongoing = findOngoing(today, nowMins); // slot-level for highlight
+      const ongoing = findOngoing(today, nowMins);
       const upcoming = findUpcoming(merged, nowMins);
 
       if(ongoing){
-        // show time remaining to the end of the current block
         const end = toMins(ongoing.end);
         const diffMs = (end - nowMins)*60*1000 - (now.getSeconds()*1000 + now.getMilliseconds());
         const hrs = Math.max(0, Math.floor(diffMs/3600000));
@@ -467,4 +483,3 @@
 </script>
 </body>
 </html>
-
