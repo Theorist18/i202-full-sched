@@ -89,7 +89,7 @@
   <header>I202 Class Schedule — Live View</header>
 
   <div class="controls">
-    <button onclick="goBack()">⬅ Return</button>
+    
     <button onclick="zoom(0.1)">🔍 Zoom In</button>
     <button onclick="zoom(-0.1)">🔎 Zoom Out</button>
   </div>
@@ -346,14 +346,7 @@
     document.getElementById('schedule').style.transform = `scale(${zoomLevel})`; 
   }
 
-  // ✅ Fixed return button
-  function goBack(){
-    if (document.referrer !== "" && window.history.length > 1) {
-      history.back();
-    } else {
-      window.location.href = "/"; // fallback to homepage
-    }
-  }
+
 
   // ---- Helpers ----
   const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
