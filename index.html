@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0" />
+  <title>I202 Class Schedule</title>
+  <style>
+    body {
+      margin: 0; 
+      font-family: Arial, sans-serif; 
+      background: #000; 
+      color: #fff;
+      text-align: center;
+    }
+
+    header {
+      background: #FFD700;
+      color: #000;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .controls {
+      margin: 15px 0;
+    }
+
+    button {
+      background: #FFD700;
+      border: none;
+      color: #000;
+      padding: 8px 14px;
+      margin: 0 5px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #fff;
+      color: #000;
+      transform: scale(1.05);
+    }
+
+    .schedule-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 10px;
+      overflow-x: auto; /* allow scroll/zoom on mobile */
+    }
+
+    .schedule {
+      display: grid; 
+      grid-template-columns: 80px repeat(6, 1fr); 
+      border: 2px solid #FFD700; 
+      font-size: 13px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+      transform: scale(1);
+      transform-origin: top center;
+      transition: transform 0.3s ease;
+    }
+
+    .cell {
+      border: 1px solid #FFD700; 
+      padding: 6px; 
+      text-align: center; 
+      min-height: 40px;
+      background: #111; 
+      color: #fff;
+    }
+
+    .header {
+      font-weight: bold; 
+      background: #FFD700; 
+      color: #000;
+    }
+
+    .time {
+      font-weight: bold; 
+      background: #222; 
+      color: #FFD700;
+    }
+
+    .event {
+      font-weight: bold; 
+      background: #333; 
+      color: #fff; 
+      border-left: 4px solid #FFD700;
+    }
+
+    .event:hover {
+      background: #FFD700; 
+      color: #000; 
+      transition: 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <header>I202 Class Schedule</header>
+
+  <div class="controls">
+    <button onclick="history.back()">⬅ Return</button>
+    <button onclick="zoomIn()">🔍 Zoom In</button>
+    <button onclick="zoomOut()">🔎 Zoom Out</button>
+  </div>
+
+  <div class="schedule-wrapper">
+    <div class="schedule" id="schedule">
+      <div class="cell header">Time</div>
+      <div class="cell header">Mon</div>
+      <div class="cell header">Tue</div>
+      <div class="cell header">Wed</div>
+      <div class="cell header">Thu</div>
+      <div class="cell header">Fri</div>
+      <div class="cell header">Sat</div>
+
+      <div class="cell time">7:00-8:00</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell time">8:00-9:00</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell time">9:00-10:00</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+      <div class="cell time">10:00-11:00</div>
+      <div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>L307</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2</div><div class="cell"></div>
+
+      <div class="cell time">11:00-12:00</div>
+      <div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>L307</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2</div><div class="cell"></div>
+
+      <div class="cell time">12:00-1:00</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+      <div class="cell time">1:00-2:00</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell event">PATHFIT3<br>Guevarra, Jhunboy<br>GYM</div><div class="cell"></div><div class="cell event">7WEB1<br>Austria, Marc Ed Joseph<br>CLAB2</div><div class="cell"></div>
+
+      <div class="cell time">2:00-3:00</div>
+      <div class="cell event">CONTWORLD<br>Villacorte, Jonie<br>L309</div>
+      <div class="cell"></div><div class="cell event">PATHFIT3<br>Guevarra, Jhunboy<br>GYM</div><div class="cell"></div><div class="cell event">7AFSYS<br>AFSYS Prof<br>L310</div><div class="cell"></div>
+
+      <div class="cell time">3:00-4:00</div>
+      <div class="cell event">CONTWORLD<br>Villacorte, Jonie<br>L309</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell event">7AFSYS<br>AFSYS Prof<br>L310</div><div class="cell"></div>
+
+      <div class="cell time">4:00-5:00</div>
+      <div class="cell event">CONTWORLD<br>Villacorte, Jonie<br>L309</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell event">6DATAS<br>Galang, Deborah<br>L302</div><div class="cell event">CCARES<br>L309</div><div class="cell event">7AFSYS<br>AFSYS Prof<br>L310</div>
+
+      <div class="cell time">5:00-6:00</div>
+      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>Asynchronous</div>
+      <div class="cell event">7BUSPRO<br>Umali, Barbara<br>L304</div>
+      <div class="cell"></div>
+      <div class="cell event">6DATAS<br>Galang, Deborah<br>L302</div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+
+      <div class="cell time">6:00-7:00</div>
+      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>Asynchronous</div>
+      <div class="cell event">7BUSPRO<br>Umali, Barbara<br>L304</div>
+      <div class="cell event">7QUANTI<br>Pineda, Jayson Lester<br>L306</div>
+      <div class="cell event">6DATAS<br>Galang, Deborah<br>CLAB7</div>
+      <div class="cell"></div>
+      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>CLAB2</div>
+
+      <div class="cell time">7:00-8:00</div>
+      <div class="cell"></div>
+      <div class="cell event">7BUSPRO<br>Umali, Barbara<br>L304</div>
+      <div class="cell event">7QUANTI<br>Pineda, Jayson Lester<br>L306</div>
+      <div class="cell event">6DATAS<br>Galang, Deborah<br>CLAB7</div>
+      <div class="cell"></div>
+      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>CLAB2</div>
+
+      <div class="cell time">8:00-9:00</div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell event">7QUANTI<br>Pineda, Jayson Lester<br>L306</div>
+      <div class="cell event">6DATAS<br>Galang, Deborah<br>CLAB7</div>
+      <div class="cell"></div>
+      <div class="cell event">7HCOMINT<br>Milarpis, Carla<br>CLAB2</div>
+    </div>
+  </div>
+
+  <script>
+    let zoomLevel = 1;
+
+    function zoomIn() {
+      zoomLevel += 0.1;
+      document.getElementById("schedule").style.transform = `scale(${zoomLevel})`;
+    }
+
+    function zoomOut() {
+      if (zoomLevel > 0.5) {
+        zoomLevel -= 0.1;
+        document.getElementById("schedule").style.transform = `scale(${zoomLevel})`;
+      }
+    }
+  </script>
+</body>
+</html>
